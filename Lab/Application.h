@@ -2,9 +2,11 @@
 #include <functional>
 #include <string>
 
+#include "Blockout.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Cube3D.h"
+#include "Figure.h"
 #include "Grid.h"
 #include "PerspectiveCamera.h"
 #include "Quad2D.h"
@@ -31,11 +33,11 @@ private:
     GLFWwindow* window;
     PerspectiveCamera camera;
 
-    std::shared_ptr<Shader> shader2;
+    std::shared_ptr<Shader> shader;
     Grid* grid;
-    Cube3D *cube;
-    Cube3D *cube2;
 
+    Blockout *game;
+    
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 

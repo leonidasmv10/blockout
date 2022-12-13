@@ -67,7 +67,8 @@ public:
         this->Movement.x += velocity * deltaTime;
         this->Movement.z += velocity * deltaTime;
 
-        this->Position = glm::vec3(0.0f, sin(Movement.x) * radius, cos(Movement.z) * radius);
+        // this->Position = glm::vec3(0.0f, sin(Movement.x) * radius, cos(Movement.z) * radius);
+        this->Position = glm::vec3(sin(Movement.x) * radius, 5.0f, cos(Movement.z) * radius);
         this->RecalculateMatrix();
     }
 

@@ -32,7 +32,7 @@ Cube3D::~Cube3D()
 void Cube3D::Init()
 {
     vertexArray = std::make_shared<VertexArray>();
-    vertexBuffer = std::make_shared<VertexBuffer>(GeometricTools::UnitCube3D, sizeof(GeometricTools::UnitCube3D));
+    vertexBuffer = std::make_shared<VertexBuffer>(GeometricTools::UnitCube, sizeof(GeometricTools::UnitCube));
 
     vertexArray->Bind();
     vertexBuffer->Bind();

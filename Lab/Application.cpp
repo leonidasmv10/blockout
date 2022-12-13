@@ -90,31 +90,28 @@ unsigned Application::Init()
     std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n";
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
 
-   
-    shader2 = std::make_shared<Shader>(std::string(SHADERS_DIR) + "model.vert",
-                                       std::string(SHADERS_DIR) + "model.frag");
+
+    shader = std::make_shared<Shader>(std::string(SHADERS_DIR) + "model.vert",
+                                      std::string(SHADERS_DIR) + "model.frag");
 
 
-    shader2->Bind();
+    shader->Bind();
 
     grid = new Grid();
 
+    game = new Blockout();
+
     grid->Init();
 
-    shader2->Unbind();
+    game->Init();
+
+    shader->Unbind();
 
 
     camera = PerspectiveCamera();
     camera.SetFrustrum(PerspectiveCamera::Frustrum(45.0f, width, height, 0.1f, 100.0f));
     camera.SetMovement(0, 0.0);
 
-    // camera.SetPosition(glm::vec3(0.0f,0.0f,0.0f));
-
-    cube = new Cube3D(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f));
-
-    cube2 = new Cube3D(glm::vec3(2.0f, 10.5f, 0.0f), glm::vec3(1.0f));
-    cube2->SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
-    
 
     TextureManager::GetInstance()->LoadTexture2DRGBA("cube_texture",
                                                      std::string(TEXTURES_DIR) + "cube_texture.png",
@@ -124,7 +121,10 @@ unsigned Application::Init()
                                                      std::string(TEXTURES_DIR) + "floor_texture.png",
                                                      1, false);
 
-    
+
+    shader->Bind();
+    shader->UploadUniformBool("isBinding", true);
+    shader->Unbind();
 
     return 1;
 }
@@ -145,6 +145,8 @@ unsigned Application::Run()
         glClearColor(0.0f, 0.31f, 0.87f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        game->Update(deltaTime);
+        
         // board->Render(*shader.get(), camera);
 
         glm::mat4 model = glm::mat4(1.0f);
@@ -153,18 +155,25 @@ unsigned Application::Run()
         model = glm::translate(model, glm::vec3(-2.5f, 0.0f, -2.5f));
         model = glm::scale(model, glm::vec3(5.0f));
 
-        shader2->Bind();
+        shader->Bind();
 
-        shader2->UploadUniformMat4("projection", projection);
-        shader2->UploadUniformMat4("view", view);
-        shader2->UploadUniformMat4("model", model);
+        shader->UploadUniformFloat("mixed", 1.0f);
+        shader->UploadUniformFloat("blending", 1.0f);
+
+        shader->UploadUniformVec4("color", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+        shader->UploadUniformMat4("projection", projection);
+        shader->UploadUniformMat4("view", view);
+        shader->UploadUniformMat4("model", model);
 
         grid->Render();
 
-        shader2->Unbind();
+        shader->Unbind();
 
-        cube->Render(*shader2, camera);
-        cube2->Render(*shader2, camera);
+        game->Render(*shader,camera);
+
+        
+
+      
 
         glfwSwapBuffers(window);
     }
@@ -178,8 +187,13 @@ void Application::InputCallback()
     {
         if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
         {
-            auto pos = cube2->GetPosition();
-            cube2->SetPosition(glm::vec3(pos.x, pos.y - 1.0f, pos.z));
+           
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        {
+            std::cout << "DOWN\n";
+            game->MoveBlock(1,0);
         }
     };
 }
