@@ -97,6 +97,7 @@ unsigned Application::Init()
 
     shader->Bind();
 
+    bool flag = false;
 
     for (int i = 0; i < 5; i++)
     {
@@ -104,6 +105,7 @@ unsigned Application::Init()
         {
             auto q = new Quad2D({i * 1 - 2.0f, 0.0f, j * 1 - 2.0f}, {0.0f, 0.0f, 0.0f}, {0.5, 0.1f, 0.5f});
             q->Init();
+            q->SetColor({0, 1, 0,1});
             quads.push_back(q);
         }
     }
@@ -180,6 +182,7 @@ unsigned Application::Init()
 
 unsigned Application::Run()
 {
+    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -206,8 +209,12 @@ unsigned Application::Run()
 
         shader->Bind();
 
-        shader->UploadUniformFloat("mixed", 1.0f);
-        shader->UploadUniformFloat("blending", 1.0f);
+
+        shader->UploadUniformVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        shader->UploadUniformVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        shader->UploadUniformVec3("lightPos", lightPos);
+        shader->UploadUniformVec3("viewPos", camera.GetPosition());
+
 
         shader->UploadUniformVec4("color", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         shader->UploadUniformMat4("projection", projection);
@@ -269,8 +276,6 @@ void Application::InputCallback()
             isBinding = !isBinding;
             shader->UploadUniformBool("isBinding", isBinding);
         }
-
-        
     };
 }
 
