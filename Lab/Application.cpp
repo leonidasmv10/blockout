@@ -94,18 +94,10 @@ unsigned Application::Init()
     shaderWall = std::make_shared<Shader>(std::string(SHADERS_DIR) + "model.vert",
                                           std::string(SHADERS_DIR) + "model.frag");
 
-    srand(time(NULL));
+    shaderBlock = std::make_shared<Shader>(std::string(SHADERS_DIR) + "model.vert",
+                                           std::string(SHADERS_DIR) + "model.frag");
 
-    shaderCube->Bind();
-    
-    game = new Blockout();
-    game->Init();
 
-    scene = new Scene();
-    scene->Generate();
-    
-    shaderCube->Unbind();
-    
     camera = PerspectiveCamera();
     camera.SetFrustrum(PerspectiveCamera::Frustrum(45.0f, width, height, 0.1f, 100.0f));
 
@@ -120,13 +112,28 @@ unsigned Application::Init()
 
 
     shaderCube->Bind();
-    shaderCube->UploadUniformInt("mode", 3);
+    shaderCube->UploadUniformInt("mode", 0);
     shaderCube->Unbind();
 
     shaderWall->Bind();
     shaderWall->UploadUniformInt("mode", 4);
     shaderWall->Unbind();
 
+    shaderBlock->Bind();
+    shaderBlock->UploadUniformInt("mode", 3);
+    shaderBlock->Unbind();
+
+    srand(time(NULL));
+
+    shaderCube->Bind();
+
+    game = new Blockout();
+    game->Init();
+
+    scene = new Scene();
+    scene->Generate();
+
+    shaderCube->Unbind();
 
     return 1;
 }
@@ -149,7 +156,7 @@ unsigned Application::Run()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        
+
         glm::mat4 model = glm::mat4(1.0f);
         const glm::mat4 projection = camera.GetProjectionMatrix();
         const glm::mat4 view = camera.GetViewMatrix();
@@ -157,25 +164,23 @@ unsigned Application::Run()
         model = glm::scale(model, glm::vec3(5.0f));
 
         shaderCube->Bind();
-
-
+        
         shaderCube->UploadUniformVec3("objectColor", 1.0f, 0.5f, 0.31f);
         shaderCube->UploadUniformVec3("lightColor", 1.0f, 1.0f, 1.0f);
         shaderCube->UploadUniformVec3("lightPos", lightPos);
         shaderCube->UploadUniformVec3("viewPos", camera.GetPosition());
-
-
+        
         shaderCube->UploadUniformVec4("color", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         shaderCube->UploadUniformMat4("projection", projection);
         shaderCube->UploadUniformMat4("view", view);
         shaderCube->UploadUniformMat4("model", model);
-
-
+        
         shaderCube->Unbind();
 
-        game->Render(*shaderCube, projection, view);
+        game->Render(*shaderBlock, projection, view);
+        game->RenderCubeMovement(*shaderCube, projection, view);
         scene->Render(*shaderWall, projection, view);
-
+        
         glfwSwapBuffers(window);
     }
 

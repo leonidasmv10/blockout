@@ -19,20 +19,18 @@ void Blockout::Init()
         }
     }
 
-    AddBlock();
-    currentCube = cubes.back();
+    currentCube = CreateCube();
 }
 
-void Blockout::Update(const float &time,float &startFrame)
+void Blockout::Update(const float& time, float& startFrame)
 {
     const auto pos = currentCube->GetPosition();
 
-    if( time > maxTime)
+    if (time > maxTime)
     {
         startFrame = static_cast<float>(glfwGetTime());
         MoveBlock(0, -1, 0);
     }
-    
 
     for (int i = 0; i < 10; i++)
     {
@@ -47,9 +45,9 @@ void Blockout::Update(const float &time,float &startFrame)
     {
         throwBlock = false;
         MarkBlock(pos);
-        currentCube->SetBlending(2);
-        AddBlock();
-        currentCube = cubes.back();
+        AddBlock(currentCube);
+        currentCube = CreateCube();
+        startFrame = static_cast<float>(glfwGetTime());
     }
 
     if (depth == 9) std::cout << "GAME OVER\n";
@@ -67,6 +65,11 @@ void Blockout::Render(const Shader& shader, const glm::mat4 projection, const gl
     {
         cube->Render(shader, projection, view);
     }
+}
+
+void Blockout::RenderCubeMovement(const Shader& shader, const glm::mat4 projection, const glm::mat4 view) const
+{
+    currentCube->Render(shader, projection, view);
 }
 
 void Blockout::Print() const
@@ -91,10 +94,9 @@ void Blockout::MarkBlock(const glm::vec3 pos)
     blocks[static_cast<int>(pos.y)][static_cast<int>(pos.z + 2)][static_cast<int>(pos.x + 2)] = 1;
 }
 
-void Blockout::AddBlock()
+void Blockout::AddBlock(Cube3D* cube)
 {
-    cubes.push_back(new Cube3D({0.0f, 9.5f, 0.0f}, {1.0f, 1.0f, 1.0f}));
-    cubes.back()->SetBlending(true);
+    cubes.push_back(cube);
 }
 
 void Blockout::MoveBlock(int axis_x, int axis_y, int axis_z)
@@ -124,4 +126,9 @@ bool Blockout::ValidateLimits(const glm::vec3 newPosition) const
 bool Blockout::HasBlock(const glm::vec3 position) const
 {
     return blocks[static_cast<int>(position.y)][static_cast<int>(position.z + 2)][static_cast<int>(position.x + 2)];
+}
+
+Cube3D* Blockout::CreateCube()
+{
+    return new Cube3D({0.0f, 9.5f, 0.0f}, {1.0f, 1.0f, 1.0f});;
 }

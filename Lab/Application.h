@@ -35,6 +35,7 @@ private:
     PerspectiveCamera camera;
 
     std::shared_ptr<Shader> shaderCube;
+    std::shared_ptr<Shader> shaderBlock;
     std::shared_ptr<Shader> shaderWall;
 
     Blockout* game;

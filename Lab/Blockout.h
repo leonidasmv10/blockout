@@ -10,13 +10,15 @@ public:
     void Init();
     void Update(const float &time,float &startFrame);
     void Render(const Shader& shader, const glm::mat4 projection, const glm::mat4 view) const;
+    void RenderCubeMovement(const Shader& shader, const glm::mat4 projection, const glm::mat4 view) const;
     void Print() const;
     void MarkBlock(glm::vec3 pos);
-    void AddBlock();
+    void AddBlock(Cube3D* cube);
     void MoveBlock(int axis_x, int axis_y, int axis_z);
     void MoveBlock();
     bool ValidateLimits(glm::vec3 newPosition) const;
     bool HasBlock(glm::vec3 position) const;
+    Cube3D* CreateCube();
 
 private:
     int blocks[10][5][5];
