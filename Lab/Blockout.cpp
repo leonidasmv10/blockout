@@ -3,10 +3,12 @@
 #include <iostream>
 #include <glm/vec3.hpp>
 
+#include "GLFW/glfw3.h"
+
 
 void Blockout::Init()
 {
-    for (auto& i : block_)
+    for (auto& i : blocks)
     {
         for (auto& j : i)
         {
@@ -21,11 +23,16 @@ void Blockout::Init()
     currentCube = cubes.back();
 }
 
-void Blockout::Update()
+void Blockout::Update(const float &time,float &startFrame)
 {
-    if (!flag) return;
-
     const auto pos = currentCube->GetPosition();
+
+    if( time > maxTime)
+    {
+        startFrame = static_cast<float>(glfwGetTime());
+        MoveBlock(0, -1, 0);
+    }
+    
 
     for (int i = 0; i < 10; i++)
     {
@@ -36,20 +43,22 @@ void Blockout::Update()
         }
     }
 
-    if (depth == 9) std::cout << "GAME OVER\n";
-
-    const glm::vec3 target = {pos.x, depth + 0.5f, pos.z};
-    glm::vec3 lerp = glm::mix(pos, target, 0.2f);
-    currentCube->SetPosition({lerp.x, lerp.y, lerp.z});
-
     if (pos.y <= 0.51f + depth)
     {
-        flag = false;
+        throwBlock = false;
         MarkBlock(pos);
         currentCube->SetBlending(2);
         AddBlock();
         currentCube = cubes.back();
     }
+
+    if (depth == 9) std::cout << "GAME OVER\n";
+
+    if (!throwBlock) return;
+
+    const glm::vec3 target = {pos.x, depth + 0.5f, pos.z};
+    glm::vec3 lerp = glm::mix(pos, target, 0.2f);
+    currentCube->SetPosition({lerp.x, lerp.y, lerp.z});
 }
 
 void Blockout::Render(const Shader& shader, const glm::mat4 projection, const glm::mat4 view) const
@@ -69,7 +78,7 @@ void Blockout::Print() const
         {
             for (int k = 0; k < 5; k++)
             {
-                std::cout << block_[i][j][k];
+                std::cout << blocks[i][j][k];
             }
             std::cout << "\n";
         }
@@ -79,7 +88,7 @@ void Blockout::Print() const
 
 void Blockout::MarkBlock(const glm::vec3 pos)
 {
-    block_[static_cast<int>(pos.y)][static_cast<int>(pos.z + 2)][static_cast<int>(pos.x + 2)] = 1;
+    blocks[static_cast<int>(pos.y)][static_cast<int>(pos.z + 2)][static_cast<int>(pos.x + 2)] = 1;
 }
 
 void Blockout::AddBlock()
@@ -90,7 +99,7 @@ void Blockout::AddBlock()
 
 void Blockout::MoveBlock(int axis_x, int axis_y, int axis_z)
 {
-    if (flag) return;
+    if (throwBlock) return;
     const auto pos = currentCube->GetPosition();
     const glm::vec3 newPosition = {pos.x + axis_x, pos.y + axis_y, pos.z + axis_z};
 
@@ -102,7 +111,7 @@ void Blockout::MoveBlock(int axis_x, int axis_y, int axis_z)
 
 void Blockout::MoveBlock()
 {
-    flag = true;
+    throwBlock = true;
 }
 
 bool Blockout::ValidateLimits(const glm::vec3 newPosition) const
@@ -114,5 +123,5 @@ bool Blockout::ValidateLimits(const glm::vec3 newPosition) const
 
 bool Blockout::HasBlock(const glm::vec3 position) const
 {
-    return block_[static_cast<int>(position.y)][static_cast<int>(position.z + 2)][static_cast<int>(position.x + 2)];
+    return blocks[static_cast<int>(position.y)][static_cast<int>(position.z + 2)][static_cast<int>(position.x + 2)];
 }

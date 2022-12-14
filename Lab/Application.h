@@ -39,10 +39,10 @@ private:
 
     Blockout* game;
     Scene* scene;
-
-    float deltaTime = 0.0f;
-    float lastFrame = 0.0f;
-
+    
+    float currentFrame = 0.0f;
+    float currentTime = 0.0f;
+    float startFrame = static_cast<float>(glfwGetTime());
 
     std::function<void(int key, int scancode, int action, int mods)> key_input;
 };

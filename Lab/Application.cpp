@@ -5,8 +5,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "GeometricTools.h"
-#include "Grid.h"
 #include "TextureManager.h"
 
 Application::Application(const std::string& name, const std::string& version)
@@ -99,18 +97,15 @@ unsigned Application::Init()
     srand(time(NULL));
 
     shaderCube->Bind();
-
-
+    
     game = new Blockout();
     game->Init();
 
     scene = new Scene();
     scene->Generate();
-
-
+    
     shaderCube->Unbind();
-
-
+    
     camera = PerspectiveCamera();
     camera.SetFrustrum(PerspectiveCamera::Frustrum(45.0f, width, height, 0.1f, 100.0f));
 
@@ -139,23 +134,22 @@ unsigned Application::Init()
 unsigned Application::Run()
 {
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
 
-        const float currentFrame = static_cast<float>(glfwGetTime());
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        currentFrame = static_cast<float>(glfwGetTime());
+        currentTime = currentFrame - startFrame;
 
         Input(window);
+        game->Update(currentTime, startFrame);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        game->Update();
-
-
+        
         glm::mat4 model = glm::mat4(1.0f);
         const glm::mat4 projection = camera.GetProjectionMatrix();
         const glm::mat4 view = camera.GetViewMatrix();
