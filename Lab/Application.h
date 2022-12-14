@@ -42,6 +42,8 @@ private:
     Scene* scene;
     
     float currentFrame = 0.0f;
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
     float currentTime = 0.0f;
     float startFrame = static_cast<float>(glfwGetTime());
 

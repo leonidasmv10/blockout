@@ -57,15 +57,15 @@ Application::Application(const std::string& name, const std::string& version)
 
     // Enable capture of debug output.
     glEnable(GL_DEBUG_OUTPUT);
-    // glDebugMessageCallback(
-    //     [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
-    //        const GLchar* message, const void* userParam)
-    //     {
-    //         std::cerr << "GL CALLBACK:" << (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "") <<
-    //             "type = 0x" << type <<
-    //             ", severity = 0x" << severity <<
-    //             ", message =" << message << "\n";
-    //     }, 0);
+    glDebugMessageCallback(
+        [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+           const GLchar* message, const void* userParam)
+        {
+            std::cerr << "GL CALLBACK:" << (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "") <<
+                "type = 0x" << type <<
+                ", severity = 0x" << severity <<
+                ", message =" << message << "\n";
+        }, 0);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -121,21 +121,16 @@ unsigned Application::Init()
     shaderWall->Unbind();
 
     shaderBlock->Bind();
-    shaderBlock->UploadUniformInt("mode", 3);
+    shaderBlock->UploadUniformInt("mode", 1);
     shaderBlock->Unbind();
-
-    srand(time(NULL));
-
-    shaderCube->Bind();
-
+    
     game = new Blockout();
-    game->Init();
-
     scene = new Scene();
+
+    game->Init();
     scene->Generate();
 
-    shaderCube->Unbind();
-
+    srand(time(NULL));
     return 1;
 }
 
@@ -147,10 +142,15 @@ unsigned Application::Run()
         glfwPollEvents();
 
         currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         currentTime = currentFrame - startFrame;
+
 
         Input(window);
         game->Update(currentTime, startFrame);
+        PhongLighting::Update(deltaTime);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -159,8 +159,8 @@ unsigned Application::Run()
         const glm::mat4 projection = camera.GetProjectionMatrix();
         const glm::mat4 view = camera.GetViewMatrix();
 
-
         PhongLighting::SetLighting(*shaderWall, camera.GetPosition());
+        PhongLighting::SetLighting(*shaderBlock, camera.GetPosition());
 
 
         game->Render(*shaderBlock, projection, view);
