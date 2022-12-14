@@ -38,8 +38,9 @@ void Quad2D::Init()
     vertexBuffer->Bind();
     elementBuffer->Bind();
 
-    vertexArray->AttribPointer(3, 5, (void*)0);
-    vertexArray->AttribPointer(2, 5, (void*)(3 * sizeof(float)));
+    vertexArray->AttribPointer(3, 8, (void*)0);
+    vertexArray->AttribPointer(2, 8, (void*)(3 * sizeof(float)));
+    vertexArray->AttribPointer(3, 8, (void*)(5 * sizeof(float)));
 
     vertexBuffer->Unbind();
     vertexArray->Unbind();

@@ -90,13 +90,13 @@ unsigned Application::Init()
     std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n";
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
 
-
     shader = std::make_shared<Shader>(std::string(SHADERS_DIR) + "model.vert",
                                       std::string(SHADERS_DIR) + "model.frag");
 
+    srand(time(NULL));
 
     shader->Bind();
-    
+
 
     for (int i = 0; i < 5; i++)
     {
@@ -149,7 +149,6 @@ unsigned Application::Init()
     }
 
 
-
     game = new Blockout();
 
     game->Init();
@@ -173,7 +172,7 @@ unsigned Application::Init()
 
 
     shader->Bind();
-    shader->UploadUniformBool("isBinding", true);
+    shader->UploadUniformBool("isBinding", false);
     shader->Unbind();
 
     return 1;
@@ -216,7 +215,6 @@ unsigned Application::Run()
         shader->UploadUniformMat4("model", model);
 
 
-
         shader->Unbind();
 
         game->Render(*shader, camera);
@@ -225,7 +223,6 @@ unsigned Application::Run()
         {
             quad->Render(*shader, camera);
         }
-
 
 
         glfwSwapBuffers(window);
@@ -243,14 +240,9 @@ void Application::InputCallback()
             game->MoveBlock();
         }
 
-        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-        {
-            game->MoveBlock(0, -1, 0);
-        }
-
         if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
         {
-            game->MoveBlock(0, 1, 0);
+            game->MoveBlock(0, -1, 0);
         }
 
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
@@ -272,6 +264,13 @@ void Application::InputCallback()
         {
             game->MoveBlock(0, 0, 1);
         }
+        if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+        {
+            isBinding = !isBinding;
+            shader->UploadUniformBool("isBinding", isBinding);
+        }
+
+        
     };
 }
 

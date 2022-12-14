@@ -12,9 +12,10 @@
 
 Cube3D::Cube3D()
 {
-    position = glm::vec3(0.0f, 0.0f, 0.0f);
-    scale = glm::vec3(1.0f, 1.0f, 1.0f);
-    color = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
+    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+    this->blending = 2;
+    this->RandomColor();
     this->Init();
 }
 
@@ -22,7 +23,8 @@ Cube3D::Cube3D(const glm::vec3& position, const glm::vec3& scale)
 {
     this->position = position;
     this->scale = scale;
-    this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    this->blending = 2;
+    this->RandomColor();
     this->Init();
 }
 
@@ -33,13 +35,14 @@ Cube3D::~Cube3D()
 void Cube3D::Init()
 {
     vertexArray = std::make_shared<VertexArray>();
-    vertexBuffer = std::make_shared<VertexBuffer>(GeometricTools::UnitCube, sizeof(GeometricTools::UnitCube));
+    vertexBuffer = std::make_shared<VertexBuffer>(GeometricTools::UnitCube3D, sizeof(GeometricTools::UnitCube3D));
 
     vertexArray->Bind();
     vertexBuffer->Bind();
 
-    vertexArray->AttribPointer(3, 5, (void*)0);
-    vertexArray->AttribPointer(2, 5, (void*)(3 * sizeof(float)));
+    vertexArray->AttribPointer(3, 8, (void*)0);
+    vertexArray->AttribPointer(2, 8, (void*)(3 * sizeof(float)));
+    vertexArray->AttribPointer(3, 8, (void*)(5 * sizeof(float)));
 
     vertexBuffer->Unbind();
     vertexArray->Unbind();
@@ -47,11 +50,19 @@ void Cube3D::Init()
     vertexArray->AddVertexBuffer(vertexBuffer);
 }
 
-void Cube3D::Render(Shader& shader, PerspectiveCamera& camera)
+void Cube3D::Render(const Shader& shader, const PerspectiveCamera& camera)
 {
     shader.Bind();
     glActiveTexture(GL_TEXTURE0);
     shader.UploadUniformInt("texture1", 0.0f);
+
+    // if (blending == 1)
+    //     shader.UploadUniformBool("isBinding", true);
+    // else if (blending == 0)
+    // {
+    //     shader.UploadUniformBool("isBinding", false);
+    //     blending = 2;
+    // }
 
     glm::mat4 model = glm::mat4(1.0f);
     const glm::mat4 projection = camera.GetProjectionMatrix();
@@ -60,8 +71,8 @@ void Cube3D::Render(Shader& shader, PerspectiveCamera& camera)
     shader.UploadUniformMat4("projection", projection);
     shader.UploadUniformMat4("view", view);
 
-    shader.UploadUniformFloat("mixed", 0.5f);
-    shader.UploadUniformFloat("blending", 0.9f);
+    shader.UploadUniformFloat("mixed", 0.6f);
+    shader.UploadUniformFloat("blending", 0.4f);
 
     model = glm::scale(model, scale);
     model = glm::translate(model, position);
@@ -77,4 +88,13 @@ void Cube3D::Debug() const
 {
     std::cout << "Position\n";
     std::cout << "[" << position.x << "][" << position.y << "][" << position.z << "]\n";
+}
+
+void Cube3D::RandomColor()
+{
+    int r = rand() % 2;
+    int g = rand() % 2;
+    int b = rand() % 2;
+
+    color = {r, g, b, 1};
 }

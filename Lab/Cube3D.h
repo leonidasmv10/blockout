@@ -12,8 +12,10 @@ public:
     ~Cube3D();
 
     void Init();
-    void Render(Shader& shader, PerspectiveCamera& camera);
+    void Render(const Shader& shader, const PerspectiveCamera& camera);
     void Debug() const;
+
+    void RandomColor();
 
     void SetPosition(const glm::vec3& position)
     {
@@ -45,12 +47,18 @@ public:
         return this->color;
     }
 
+    void SetBlending(bool bending)
+    {
+        this->blending = bending;
+    }
+
 private:
-    
     std::shared_ptr<VertexArray> vertexArray;
     std::shared_ptr<VertexBuffer> vertexBuffer;
 
     glm::vec3 position;
     glm::vec3 scale;
     glm::vec4 color;
+
+    int blending;
 };
