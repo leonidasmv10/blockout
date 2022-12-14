@@ -9,7 +9,8 @@
 PerspectiveCamera::PerspectiveCamera(const Frustrum& frustrum, const glm::vec3& position, const glm::vec3& lookAt,
                                      const glm::vec3& upVector)
 {
-    
+    RecalculateMatrix();
+    Position = {0.0,14.5,0.01};
 }
 
 void PerspectiveCamera::RecalculateMatrix()

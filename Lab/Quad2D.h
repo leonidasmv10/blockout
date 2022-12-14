@@ -9,7 +9,7 @@ class Quad2D
 {
 public:
     Quad2D();
-    Quad2D(const glm::vec3& position, const glm::vec3& scale);
+    Quad2D(const glm::vec3& position,const glm::vec3& rotation, const glm::vec3& scale);
     ~Quad2D();
     void Init();
     void Render(Shader& shader, PerspectiveCamera& camera);
@@ -22,6 +22,11 @@ public:
     void SetScale(const glm::vec3& scale)
     {
         this->scale = scale;
+    }
+
+    void SetRotation(const glm::vec3& rotation)
+    {
+        this->rotation = rotation;
     }
 
     void SetColor(const glm::vec4& color)
@@ -53,5 +58,6 @@ private:
 
     glm::vec3 position;
     glm::vec3 scale;
+    glm::vec3 rotation;
     glm::vec4 color;
 };

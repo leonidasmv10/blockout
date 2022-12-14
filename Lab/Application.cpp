@@ -96,21 +96,71 @@ unsigned Application::Init()
 
 
     shader->Bind();
+    
 
-    grid = new Grid();
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            auto q = new Quad2D({i * 1 - 2.0f, 0.0f, j * 1 - 2.0f}, {0.0f, 0.0f, 0.0f}, {0.5, 0.1f, 0.5f});
+            q->Init();
+            quads.push_back(q);
+        }
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            auto q = new Quad2D({2.5f, j + 0.5f, 2.f - i}, {0.0f, 0.0f, 90.0f}, {0.5, 0.1f, 0.5f});
+            q->Init();
+            quads.push_back(q);
+        }
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            auto q = new Quad2D({-2.5f, j + 0.5f, 2.f - i}, {0.0f, 0.0f, 90.0f}, {0.5, 0.1f, 0.5f});
+            q->Init();
+            quads.push_back(q);
+        }
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            auto q = new Quad2D({2.f - i, 0.5f + j, 2.5f}, {90.0f, 0.0f, 00.0f}, {0.5, 0.1f, 0.5f});
+            q->Init();
+            quads.push_back(q);
+        }
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            auto q = new Quad2D({2.f - i, 0.5f + j, -2.5f}, {90.0f, 0.0f, 00.0f}, {0.5, 0.1f, 0.5f});
+            q->Init();
+            quads.push_back(q);
+        }
+    }
+
+
 
     game = new Blockout();
 
-    grid->Init();
-
     game->Init();
+
 
     shader->Unbind();
 
 
     camera = PerspectiveCamera();
     camera.SetFrustrum(PerspectiveCamera::Frustrum(45.0f, width, height, 0.1f, 100.0f));
-    camera.SetMovement(0, 0.0);
+    // camera.SetMovement(0, 0.0);
 
 
     TextureManager::GetInstance()->LoadTexture2DRGBA("cube_texture",
@@ -118,7 +168,7 @@ unsigned Application::Init()
                                                      0, true);
 
     TextureManager::GetInstance()->LoadTexture2DRGBA("floor_texture",
-                                                     std::string(TEXTURES_DIR) + "floor_texture.png",
+                                                     std::string(TEXTURES_DIR) + "marble.jpg",
                                                      1, false);
 
 
@@ -142,11 +192,11 @@ unsigned Application::Run()
 
         Input(window);
 
-        glClearColor(0.0f, 0.31f, 0.87f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        game->Update(deltaTime);
-        
+        game->Update();
+
         // board->Render(*shader.get(), camera);
 
         glm::mat4 model = glm::mat4(1.0f);
@@ -165,15 +215,18 @@ unsigned Application::Run()
         shader->UploadUniformMat4("view", view);
         shader->UploadUniformMat4("model", model);
 
-        grid->Render();
+
 
         shader->Unbind();
 
-        game->Render(*shader,camera);
+        game->Render(*shader, camera);
 
-        
+        for (const auto& quad : quads)
+        {
+            quad->Render(*shader, camera);
+        }
 
-      
+
 
         glfwSwapBuffers(window);
     }
@@ -185,15 +238,39 @@ void Application::InputCallback()
 {
     key_input = [&](int key, int sancode, int action, int mods)
     {
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        {
+            game->MoveBlock();
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+        {
+            game->MoveBlock(0, -1, 0);
+        }
+
         if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
         {
-           
+            game->MoveBlock(0, 1, 0);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        {
+            game->MoveBlock(-1, 0, 0);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        {
+            game->MoveBlock(1, 0, 0);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        {
+            game->MoveBlock(0, 0, -1);
         }
 
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
         {
-            std::cout << "DOWN\n";
-            game->MoveBlock(1,0);
+            game->MoveBlock(0, 0, 1);
         }
     };
 }
@@ -202,16 +279,4 @@ void Application::Input(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        camera.SetMovement(deltaTime, 1.f);
-
-    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
-        camera.SetMovement(deltaTime, -1.f);
-
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-        camera.SetAngle(camera.GetAngle() - 1.0f * deltaTime);
-
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-        camera.SetAngle(camera.GetAngle() + 1.0f * deltaTime);
 }

@@ -1,5 +1,6 @@
 ﻿#include "Cube3D.h"
 
+#include <iostream>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -70,4 +71,10 @@ void Cube3D::Render(Shader& shader, PerspectiveCamera& camera)
 
     vertexArray->Bind();
     glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void Cube3D::Debug() const
+{
+    std::cout << "Position\n";
+    std::cout << "[" << position.x << "][" << position.y << "][" << position.z << "]\n";
 }

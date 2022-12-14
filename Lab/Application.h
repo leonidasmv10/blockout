@@ -34,10 +34,12 @@ private:
     PerspectiveCamera camera;
 
     std::shared_ptr<Shader> shader;
-    Grid* grid;
 
-    Blockout *game;
+    Blockout* game;
     
+
+    std::vector<Quad2D*> quads;
+
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 

@@ -6,9 +6,9 @@ namespace GeometricTools
 
     inline constexpr float UnitQuad2D[5 * 4] = {
         1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, -1.0f, 0.0f, 1.0f,
-        -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-        -1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+        -1.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+        -1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
     };
 
     const int InidicesQuad2D[2 * 3] = {

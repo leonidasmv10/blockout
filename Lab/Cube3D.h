@@ -13,6 +13,7 @@ public:
 
     void Init();
     void Render(Shader& shader, PerspectiveCamera& camera);
+    void Debug() const;
 
     void SetPosition(const glm::vec3& position)
     {
