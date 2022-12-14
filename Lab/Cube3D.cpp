@@ -92,9 +92,14 @@ void Cube3D::Debug() const
 
 void Cube3D::RandomColor()
 {
-    int r = rand() % 2;
-    int g = rand() % 2;
-    int b = rand() % 2;
+    int r, g, b;
+    do
+    {
+        r = rand() % 2;
+        g = rand() % 2;
+        b = rand() % 2;
+    }
+    while (r == g && r == b && g == b);
 
     color = {r, g, b, 1};
 }

@@ -97,6 +97,9 @@ unsigned Application::Init()
 
     shader->Bind();
 
+    glm::vec4 green = {1, 1, 1, 1};
+    glm::vec4 black = {0, 0, 0, 1};
+
     bool flag = false;
 
     for (int i = 0; i < 5; i++)
@@ -105,9 +108,14 @@ unsigned Application::Init()
         {
             auto q = new Quad2D({i * 1 - 2.0f, 0.0f, j * 1 - 2.0f}, {0.0f, 0.0f, 0.0f}, {0.5, 0.1f, 0.5f});
             q->Init();
-            q->SetColor({0, 1, 0,1});
+            if (flag)
+                q->SetColor(green);
+            else
+                q->SetColor(black);
+            flag = !flag;
             quads.push_back(q);
         }
+        // flag = !flag;
     }
 
     for (int i = 0; i < 5; i++)
@@ -116,18 +124,30 @@ unsigned Application::Init()
         {
             auto q = new Quad2D({2.5f, j + 0.5f, 2.f - i}, {0.0f, 0.0f, 90.0f}, {0.5, 0.1f, 0.5f});
             q->Init();
+            if (flag)
+                q->SetColor(green);
+            else
+                q->SetColor(black);
+            flag = !flag;
             quads.push_back(q);
         }
+        flag = !flag;
     }
-
+    flag = !flag;
     for (int i = 0; i < 5; i++)
     {
         for (int j = 0; j < 10; j++)
         {
             auto q = new Quad2D({-2.5f, j + 0.5f, 2.f - i}, {0.0f, 0.0f, 90.0f}, {0.5, 0.1f, 0.5f});
             q->Init();
+            if (flag)
+                q->SetColor(green);
+            else
+                q->SetColor(black);
+            flag = !flag;
             quads.push_back(q);
         }
+        flag = !flag;
     }
 
     for (int i = 0; i < 5; i++)
@@ -136,18 +156,30 @@ unsigned Application::Init()
         {
             auto q = new Quad2D({2.f - i, 0.5f + j, 2.5f}, {90.0f, 0.0f, 00.0f}, {0.5, 0.1f, 0.5f});
             q->Init();
+            if (flag)
+                q->SetColor(green);
+            else
+                q->SetColor(black);
+            flag = !flag;
             quads.push_back(q);
         }
+        flag = !flag;
     }
-
+    flag = !flag;
     for (int i = 0; i < 5; i++)
     {
         for (int j = 0; j < 10; j++)
         {
             auto q = new Quad2D({2.f - i, 0.5f + j, -2.5f}, {90.0f, 0.0f, 00.0f}, {0.5, 0.1f, 0.5f});
             q->Init();
+            if (flag)
+                q->SetColor(green);
+            else
+                q->SetColor(black);
+            flag = !flag;
             quads.push_back(q);
         }
+        flag = !flag;
     }
 
 
