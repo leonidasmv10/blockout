@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "PhongLighting.h"
 #include "TextureManager.h"
 
 Application::Application(const std::string& name, const std::string& version)
@@ -116,7 +117,7 @@ unsigned Application::Init()
     shaderCube->Unbind();
 
     shaderWall->Bind();
-    shaderWall->UploadUniformInt("mode", 4);
+    shaderWall->UploadUniformInt("mode", 1);
     shaderWall->Unbind();
 
     shaderBlock->Bind();
@@ -140,8 +141,6 @@ unsigned Application::Init()
 
 unsigned Application::Run()
 {
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -156,31 +155,18 @@ unsigned Application::Run()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
         glm::mat4 model = glm::mat4(1.0f);
         const glm::mat4 projection = camera.GetProjectionMatrix();
         const glm::mat4 view = camera.GetViewMatrix();
-        model = glm::translate(model, glm::vec3(-2.5f, 0.0f, -2.5f));
-        model = glm::scale(model, glm::vec3(5.0f));
 
-        shaderCube->Bind();
-        
-        shaderCube->UploadUniformVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        shaderCube->UploadUniformVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        shaderCube->UploadUniformVec3("lightPos", lightPos);
-        shaderCube->UploadUniformVec3("viewPos", camera.GetPosition());
-        
-        shaderCube->UploadUniformVec4("color", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-        shaderCube->UploadUniformMat4("projection", projection);
-        shaderCube->UploadUniformMat4("view", view);
-        shaderCube->UploadUniformMat4("model", model);
-        
-        shaderCube->Unbind();
+
+        PhongLighting::SetLighting(*shaderWall, camera.GetPosition());
+
 
         game->Render(*shaderBlock, projection, view);
         game->RenderCubeMovement(*shaderCube, projection, view);
         scene->Render(*shaderWall, projection, view);
-        
+
         glfwSwapBuffers(window);
     }
 
