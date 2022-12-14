@@ -52,11 +52,11 @@ void Blockout::Update()
     }
 }
 
-void Blockout::Render(Shader& shader, PerspectiveCamera& camera) const
+void Blockout::Render(const Shader& shader, const glm::mat4 projection, const glm::mat4 view) const
 {
     for (const auto& cube : cubes)
     {
-        cube->Render(shader, camera);
+        cube->Render(shader, projection, view);
     }
 }
 

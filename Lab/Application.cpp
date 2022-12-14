@@ -90,110 +90,29 @@ unsigned Application::Init()
     std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n";
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
 
-    shader = std::make_shared<Shader>(std::string(SHADERS_DIR) + "model.vert",
-                                      std::string(SHADERS_DIR) + "model.frag");
+    shaderCube = std::make_shared<Shader>(std::string(SHADERS_DIR) + "model.vert",
+                                          std::string(SHADERS_DIR) + "model.frag");
+
+    shaderWall = std::make_shared<Shader>(std::string(SHADERS_DIR) + "model.vert",
+                                          std::string(SHADERS_DIR) + "model.frag");
 
     srand(time(NULL));
 
-    shader->Bind();
-
-    glm::vec4 green = {1, 1, 1, 1};
-    glm::vec4 black = {0, 0, 0, 1};
-
-    bool flag = false;
-
-    for (int i = 0; i < 5; i++)
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            auto q = new Quad2D({i * 1 - 2.0f, 0.0f, j * 1 - 2.0f}, {0.0f, 0.0f, 0.0f}, {0.5, 0.1f, 0.5f});
-            q->Init();
-            if (flag)
-                q->SetColor(green);
-            else
-                q->SetColor(black);
-            flag = !flag;
-            quads.push_back(q);
-        }
-        // flag = !flag;
-    }
-
-    for (int i = 0; i < 5; i++)
-    {
-        for (int j = 0; j < 10; j++)
-        {
-            auto q = new Quad2D({2.5f, j + 0.5f, 2.f - i}, {0.0f, 0.0f, 90.0f}, {0.5, 0.1f, 0.5f});
-            q->Init();
-            if (flag)
-                q->SetColor(green);
-            else
-                q->SetColor(black);
-            flag = !flag;
-            quads.push_back(q);
-        }
-        flag = !flag;
-    }
-    flag = !flag;
-    for (int i = 0; i < 5; i++)
-    {
-        for (int j = 0; j < 10; j++)
-        {
-            auto q = new Quad2D({-2.5f, j + 0.5f, 2.f - i}, {0.0f, 0.0f, 90.0f}, {0.5, 0.1f, 0.5f});
-            q->Init();
-            if (flag)
-                q->SetColor(green);
-            else
-                q->SetColor(black);
-            flag = !flag;
-            quads.push_back(q);
-        }
-        flag = !flag;
-    }
-
-    for (int i = 0; i < 5; i++)
-    {
-        for (int j = 0; j < 10; j++)
-        {
-            auto q = new Quad2D({2.f - i, 0.5f + j, 2.5f}, {90.0f, 0.0f, 00.0f}, {0.5, 0.1f, 0.5f});
-            q->Init();
-            if (flag)
-                q->SetColor(green);
-            else
-                q->SetColor(black);
-            flag = !flag;
-            quads.push_back(q);
-        }
-        flag = !flag;
-    }
-    flag = !flag;
-    for (int i = 0; i < 5; i++)
-    {
-        for (int j = 0; j < 10; j++)
-        {
-            auto q = new Quad2D({2.f - i, 0.5f + j, -2.5f}, {90.0f, 0.0f, 00.0f}, {0.5, 0.1f, 0.5f});
-            q->Init();
-            if (flag)
-                q->SetColor(green);
-            else
-                q->SetColor(black);
-            flag = !flag;
-            quads.push_back(q);
-        }
-        flag = !flag;
-    }
+    shaderCube->Bind();
 
 
     game = new Blockout();
-
     game->Init();
 
+    scene = new Scene();
+    scene->Generate();
 
-    shader->Unbind();
+
+    shaderCube->Unbind();
 
 
     camera = PerspectiveCamera();
     camera.SetFrustrum(PerspectiveCamera::Frustrum(45.0f, width, height, 0.1f, 100.0f));
-    // camera.SetMovement(0, 0.0);
 
 
     TextureManager::GetInstance()->LoadTexture2DRGBA("cube_texture",
@@ -205,9 +124,14 @@ unsigned Application::Init()
                                                      1, false);
 
 
-    shader->Bind();
-    shader->UploadUniformBool("isBinding", false);
-    shader->Unbind();
+    shaderCube->Bind();
+    shaderCube->UploadUniformInt("mode", 3);
+    shaderCube->Unbind();
+
+    shaderWall->Bind();
+    shaderWall->UploadUniformInt("mode", 4);
+    shaderWall->Unbind();
+
 
     return 1;
 }
@@ -231,7 +155,6 @@ unsigned Application::Run()
 
         game->Update();
 
-        // board->Render(*shader.get(), camera);
 
         glm::mat4 model = glm::mat4(1.0f);
         const glm::mat4 projection = camera.GetProjectionMatrix();
@@ -239,30 +162,25 @@ unsigned Application::Run()
         model = glm::translate(model, glm::vec3(-2.5f, 0.0f, -2.5f));
         model = glm::scale(model, glm::vec3(5.0f));
 
-        shader->Bind();
+        shaderCube->Bind();
 
 
-        shader->UploadUniformVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        shader->UploadUniformVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        shader->UploadUniformVec3("lightPos", lightPos);
-        shader->UploadUniformVec3("viewPos", camera.GetPosition());
+        shaderCube->UploadUniformVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        shaderCube->UploadUniformVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        shaderCube->UploadUniformVec3("lightPos", lightPos);
+        shaderCube->UploadUniformVec3("viewPos", camera.GetPosition());
 
 
-        shader->UploadUniformVec4("color", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-        shader->UploadUniformMat4("projection", projection);
-        shader->UploadUniformMat4("view", view);
-        shader->UploadUniformMat4("model", model);
+        shaderCube->UploadUniformVec4("color", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+        shaderCube->UploadUniformMat4("projection", projection);
+        shaderCube->UploadUniformMat4("view", view);
+        shaderCube->UploadUniformMat4("model", model);
 
 
-        shader->Unbind();
+        shaderCube->Unbind();
 
-        game->Render(*shader, camera);
-
-        for (const auto& quad : quads)
-        {
-            quad->Render(*shader, camera);
-        }
-
+        game->Render(*shaderCube, projection, view);
+        scene->Render(*shaderWall, projection, view);
 
         glfwSwapBuffers(window);
     }
@@ -305,8 +223,8 @@ void Application::InputCallback()
         }
         if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
         {
-            isBinding = !isBinding;
-            shader->UploadUniformBool("isBinding", isBinding);
+            // isBinding = !isBinding;
+            // shader->UploadUniformBool("isBinding", isBinding);
         }
     };
 }

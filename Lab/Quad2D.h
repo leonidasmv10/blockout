@@ -12,7 +12,7 @@ public:
     Quad2D(const glm::vec3& position,const glm::vec3& rotation, const glm::vec3& scale);
     ~Quad2D();
     void Init();
-    void Render(Shader& shader, PerspectiveCamera& camera);
+    void Render(const Shader& shader, const glm::mat4 projection, const glm::mat4 view);
 
     void SetPosition(const glm::vec3& position)
     {

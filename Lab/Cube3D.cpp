@@ -50,23 +50,13 @@ void Cube3D::Init()
     vertexArray->AddVertexBuffer(vertexBuffer);
 }
 
-void Cube3D::Render(const Shader& shader, const PerspectiveCamera& camera)
+void Cube3D::Render(const Shader& shader, const glm::mat4 projection, const glm::mat4 view)
 {
     shader.Bind();
     glActiveTexture(GL_TEXTURE0);
     shader.UploadUniformInt("texture1", 0.0f);
 
-    // if (blending == 1)
-    //     shader.UploadUniformBool("isBinding", true);
-    // else if (blending == 0)
-    // {
-    //     shader.UploadUniformBool("isBinding", false);
-    //     blending = 2;
-    // }
-
     glm::mat4 model = glm::mat4(1.0f);
-    const glm::mat4 projection = camera.GetProjectionMatrix();
-    const glm::mat4 view = camera.GetViewMatrix();
 
     shader.UploadUniformMat4("projection", projection);
     shader.UploadUniformMat4("view", view);

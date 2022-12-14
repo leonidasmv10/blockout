@@ -8,7 +8,7 @@ in vec3 FragPos;
 
 uniform sampler2D texture1;
 uniform vec4 color;
-uniform bool isBinding;
+uniform int mode;
 
 uniform float mixed;
 uniform float blending;
@@ -21,34 +21,43 @@ uniform vec3 objectColor;
 
 void main()
 {
-    if (isBinding)
+    if (mode == 0)
     {
         vec4 res = mix(color, texture(texture1, TexCoord), mixed);
         FragColor = vec4(res.x, res.y, res.z, blending);
     }
-    else
+    else if (mode == 1)
     {
-//        // ambient
-//        float ambientStrength = 0.1;
-//        vec3 ambient = ambientStrength * lightColor;
-//
-//        // diffuse 
-//        vec3 norm = normalize(Normal);
-//        vec3 lightDir = normalize(lightPos - FragPos);
-//        float diff = max(dot(norm, lightDir), 0.0);
-//        vec3 diffuse = diff * lightColor;
-//
-//        // specular
-//        float specularStrength = 0.5;
-//        vec3 viewDir = normalize(viewPos - FragPos);
-//        vec3 reflectDir = reflect(-lightDir, norm);
-//        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-//        vec3 specular = specularStrength * spec * lightColor;
-//
-//        vec3 result = (ambient + diffuse + specular) * objectColor;
-//        FragColor = vec4(result, 1.0) * texture(texture1, TexCoord);
+        // ambient
+        float ambientStrength = 0.1;
+        vec3 ambient = ambientStrength * lightColor;
 
-        //FragColor = color * texture(texture1, TexCoord);
+        // diffuse 
+        vec3 norm = normalize(Normal);
+        vec3 lightDir = normalize(lightPos - FragPos);
+        float diff = max(dot(norm, lightDir), 0.0);
+        vec3 diffuse = diff * lightColor;
+
+        // specular
+        float specularStrength = 0.5;
+        vec3 viewDir = normalize(viewPos - FragPos);
+        vec3 reflectDir = reflect(-lightDir, norm);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+        vec3 specular = specularStrength * spec * lightColor;
+
+        vec3 result = (ambient + diffuse + specular) * objectColor;
+        FragColor = vec4(result, 1.0) * texture(texture1, TexCoord);
+    }
+    else if (mode == 2)
+    {
         FragColor = color;
+    }
+    else if (mode == 3)
+    {
+        FragColor = color * texture(texture1, TexCoord);
+    }
+    else if(mode == 4)
+    {
+        FragColor = texture(texture1, TexCoord);
     }
 }

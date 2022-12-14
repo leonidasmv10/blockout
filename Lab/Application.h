@@ -10,6 +10,7 @@
 #include "Grid.h"
 #include "PerspectiveCamera.h"
 #include "Quad2D.h"
+#include "Scene.h"
 #include "Shader.h"
 
 
@@ -33,17 +34,15 @@ private:
     GLFWwindow* window;
     PerspectiveCamera camera;
 
-    std::shared_ptr<Shader> shader;
+    std::shared_ptr<Shader> shaderCube;
+    std::shared_ptr<Shader> shaderWall;
 
     Blockout* game;
-    
-
-    std::vector<Quad2D*> quads;
+    Scene* scene;
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
-    bool isBinding = false;
 
     std::function<void(int key, int scancode, int action, int mods)> key_input;
 };

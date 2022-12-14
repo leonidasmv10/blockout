@@ -12,7 +12,7 @@ public:
     ~Cube3D();
 
     void Init();
-    void Render(const Shader& shader, const PerspectiveCamera& camera);
+    void Render(const Shader& shader, const glm::mat4 projection, const glm::mat4 view);
     void Debug() const;
 
     void RandomColor();

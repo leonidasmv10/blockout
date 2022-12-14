@@ -49,7 +49,7 @@ void Quad2D::Init()
     vertexArray->AddVertexBuffer(vertexBuffer);
 }
 
-void Quad2D::Render(Shader& shader, PerspectiveCamera& camera)
+void Quad2D::Render(const Shader& shader, const glm::mat4 projection, const glm::mat4 view)
 {
     shader.Bind();
 
@@ -57,8 +57,6 @@ void Quad2D::Render(Shader& shader, PerspectiveCamera& camera)
     shader.UploadUniformInt("texture1", 1.0f);
 
     glm::mat4 model = glm::mat4(1.0f);
-    const glm::mat4 projection = camera.GetProjectionMatrix();
-    const glm::mat4 view = camera.GetViewMatrix();
 
     shader.UploadUniformMat4("projection", projection);
     shader.UploadUniformMat4("view", view);

@@ -11,7 +11,7 @@ public:
 
     void Init();
     void Update();
-    void Render(Shader& shader, PerspectiveCamera& camera) const;
+    void Render(const Shader& shader, const glm::mat4 projection, const glm::mat4 view) const;
     void Print() const;
     void MarkBlock(glm::vec3 pos);
 
