@@ -6,8 +6,6 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Cube3D.h"
-#include "Figure.h"
-#include "Grid.h"
 #include "PerspectiveCamera.h"
 #include "Quad2D.h"
 #include "Scene.h"
