@@ -1,6 +1,6 @@
 # blockout
 
-##Dependencies
+Dependencies
 ```bash
 git submodule update --init --recursive
 ```
