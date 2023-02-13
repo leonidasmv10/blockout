@@ -1,2 +1,6 @@
 # blockout
-blockout game in c++
+
+##Dependencies
+```bash
+git submodule update --init --recursive
+```
